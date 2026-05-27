@@ -1,0 +1,7 @@
+data/
+*.pth
+*.pt
+*.csv
+*.txt
+__pycache__/
+.vscode/
