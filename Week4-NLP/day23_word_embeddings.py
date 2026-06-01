@@ -2,7 +2,7 @@
 # DAY 23 - Word Embeddings
 # Word2Vec, GloVe, FastText
 # Author: Prateek Kumar Kuntal
-# Date: 25 May 2025
+# Date: 27 May 2025
 # ============================================
 
 import numpy as np
