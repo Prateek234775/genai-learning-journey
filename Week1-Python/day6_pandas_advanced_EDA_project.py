@@ -279,9 +279,9 @@ names    = [f"Student_{i}"  for i in range(1, n+1)]
 branches = np.random.choice(["AIML","CSE","ECE","IT","Mech"], n)
 cities   = np.random.choice(["Delhi","Mumbai","Pune","Hyd","Chennai"], n)
 genders  = np.random.choice(["M", "F"], n)
-python   = np.random.randint(35, 100, n)
-maths    = np.random.randint(35, 100, n)
-ai       = np.random.randint(35, 100, n)
+python   = np.random.randint(35, 100, n).astype(float)  # make float for nulls
+maths    = np.random.randint(35, 100, n).astype(float)
+ai       = np.random.randint(35, 100, n) 
 
 # Introduce some nulls
 python[np.random.choice(n, 5, replace=False)] = np.nan
@@ -289,7 +289,7 @@ maths[np.random.choice(n, 5, replace=False)]  = np.nan
 
 df_eda = pd.DataFrame({
     "Name"    : names,
-    "Branch"  : branches,
+    "Branch"  : branches, 
     "City"    : cities,
     "Gender"  : genders,
     "Python"  : python,
