@@ -2,7 +2,7 @@
 # DAY 29 - HuggingFace Basics
 # Pipelines, Tokenizers, Model Hub
 # Author: Prateek Kumar Kuntal
-# Date: 31 May 2025
+# Date: 02 June 2026
 # ============================================
 
 from transformers import (
