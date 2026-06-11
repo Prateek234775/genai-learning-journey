@@ -2,7 +2,7 @@
 # DAY 39 - RAG from Scratch
 # Retrieval Augmented Generation
 # Author: Prateek Kumar Kuntal
-# Date: 12 June 2025
+# Date: 12 June 2026
 # ============================================
 
 import os

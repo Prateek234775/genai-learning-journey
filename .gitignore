@@ -1,5 +1,6 @@
 data/
 *.pth
+.env
 *.pt
 *.csv
 *.txt
