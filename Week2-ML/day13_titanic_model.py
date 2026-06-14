@@ -2,7 +2,7 @@
 # DAY 13 - Titanic ML Model
 # Full End to End ML Pipeline
 # Author: Prateek Kumar Kuntal
-# Date: 17 May 2025
+# Date: 17 May 2026
 # ============================================
 
 import numpy as np
@@ -25,7 +25,7 @@ warnings.filterwarnings("ignore")
 
 print("===== PART 1: Load & Explore Data =====")
 
-df = pd.read_csv("train.csv")
+df = pd.read_csv(r"D:\genai-learning-journey\train.csv")
 
 print(f"Dataset Shape    : {df.shape}")
 print(f"\nFirst 5 rows:")

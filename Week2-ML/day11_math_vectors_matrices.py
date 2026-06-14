@@ -2,7 +2,7 @@
 # DAY 11 - Math Basics for ML
 # Vectors, Matrices, Dot Product
 # Author: Prateek Kumar Kuntal
-# Date: 15 May 2025
+# Date: 15 May 2026
 # ============================================
 
 import numpy as np

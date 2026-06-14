@@ -1,7 +1,7 @@
 # ============================================
 # DAY 12 - Derivatives, Gradients, Chain Rule
 # Author: Prateek Kumar Kuntal
-# Date: 16 May 2025
+# Date: 16 May 2026
 # ============================================
 
 import numpy as np
