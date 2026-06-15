@@ -1,121 +1,152 @@
+# ============================================
+# RAG Engine - PDF Study Assistant
+# Author: Prateek Kumar Kuntal
+# Date: 16 June 2026
+# ============================================
 
 import os
 import sys
-from typing import List, Dict
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from typing import List, Dict
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.documents import Document
-
-from config import GOOGLE_API_KEY, LLM_MODEL
-
-
-ANSWER_PROMPT = ChatPromptTemplate.from_template("""
-You are a helpful study assistant. Use the context below to answer the question.
-If the answer is not in the context, say "I couldn't find that in the document."
-
-Context:
-{context}
-
-Chat History:
-{chat_history}
-
-Question: {question}
-
-Answer:
-""")
-
-CONDENSE_PROMPT = ChatPromptTemplate.from_template("""
-Given the chat history and a follow-up question, rewrite the question
-to be standalone (no pronouns that need history to understand).
-If the question is already standalone, return it as-is.
-
-Chat History:
-{chat_history}
-
-Follow-up question: {question}
-
-Standalone question:
-""")
-
-SUMMARY_PROMPT = ChatPromptTemplate.from_template("""
-Summarize the main topics in this document content in 5 clear bullet points.
-Be concise and informative.
-
-Content:
-{context}
-
-Summary:
-""")
+from config import (
+    GOOGLE_API_KEY,
+    LLM_MODEL,
+    LLM_TEMPERATURE,
+    MAX_HISTORY_TURNS,
+    RAG_PROMPT_TEMPLATE,
+    CONDENSE_PROMPT_TEMPLATE,
+)
 
 
 class RAGEngine:
     def __init__(self):
         self.llm = ChatGoogleGenerativeAI(
             model          = LLM_MODEL,
+            temperature    = LLM_TEMPERATURE,
             google_api_key = GOOGLE_API_KEY,
-            temperature    = 0.3,
         )
-        self.chat_history: List[Dict] = []
-        print(f"✅ RAG Engine ready. LLM: {LLM_MODEL}")
+        self.history       = []
+        self.query_count   = 0
+        self.sources_used  = set()
+
+        self.rag_chain      = self._build_rag_chain()
+        self.condense_chain = self._build_condense_chain()
+
+    def _build_rag_chain(self):
+        prompt = ChatPromptTemplate.from_template(
+            RAG_PROMPT_TEMPLATE)
+        return prompt | self.llm | StrOutputParser()
+
+    def _build_condense_chain(self):
+        prompt = ChatPromptTemplate.from_template(
+            CONDENSE_PROMPT_TEMPLATE)
+        return prompt | self.llm | StrOutputParser()
 
     def _format_history(self) -> str:
-        if not self.chat_history:
-            return "None"
-        lines = []
-        for turn in self.chat_history[-6:]:
-            lines.append(f"Human: {turn['question']}")
-            lines.append(f"Assistant: {turn['answer']}")
+        if not self.history:
+            return "No previous conversation."
+        recent = self.history[-MAX_HISTORY_TURNS:]
+        lines  = []
+        for turn in recent:
+            lines.append(f"Student: {turn['question']}")
+            lines.append(
+                f"Assistant: {turn['answer'][:150]}...")
         return "\n".join(lines)
 
+    def _format_docs(self,
+                     docs: List[Document]) -> str:
+        formatted = []
+        for i, doc in enumerate(docs, 1):
+            source   = doc.metadata.get(
+                "file_name", "Document")
+            page     = doc.metadata.get("page", "")
+            page_str = (f" (Page {page+1})"
+                        if page != "" else "")
+            formatted.append(
+                f"[Source {i}: {source}{page_str}]\n"
+                f"{doc.page_content}"
+            )
+        return "\n\n---\n\n".join(formatted)
+
+    def _get_sources(self,
+                     docs: List[Document]) -> List[str]:
+        sources = set()
+        for doc in docs:
+            name = doc.metadata.get(
+                "file_name", "Document")
+            page = doc.metadata.get("page", "")
+            if page != "":
+                sources.add(f"{name} (p.{page+1})")
+            else:
+                sources.add(name)
+        return list(sources)
+
     def condense_question(self, question: str) -> str:
-        if not self.chat_history:
+        if not self.history:
             return question
         try:
-            chain = CONDENSE_PROMPT | self.llm | StrOutputParser()
-            return chain.invoke({
-                "chat_history": self._format_history(),
+            history_text = self._format_history()
+            condensed    = self.condense_chain.invoke({
+                "chat_history": history_text,
                 "question"    : question,
             })
+            return condensed.strip()
         except Exception:
             return question
 
-    def answer(self, question: str, docs: List[Document]) -> Dict:
+    def answer(self, question: str,
+               docs: List[Document]) -> Dict:
+        self.query_count += 1
+
         if not docs:
             return {
-                "answer" : "I couldn't find relevant content in the document.",
-                "sources": [],
-                "chunks" : 0,
+                "answer"     : "No documents loaded. Please upload a document first.",
+                "sources"    : [],
+                "chunks_used": 0,
+                "question"   : question,
             }
 
-        context = "\n\n---\n\n".join(doc.page_content for doc in docs)
-        sources = list({doc.metadata.get("file_name", "Unknown") for doc in docs})
+        context = self._format_docs(docs)
+        history = self._format_history()
+        sources = self._get_sources(docs)
+
+        for s in sources:
+            self.sources_used.add(s)
 
         try:
-            chain  = ANSWER_PROMPT | self.llm | StrOutputParser()
-            answer = chain.invoke({
-                "context"     : context,
-                "chat_history": self._format_history(),
-                "question"    : question,
+            answer = self.rag_chain.invoke({
+                "context" : context,
+                "history" : history,
+                "question": question,
             })
-            self.chat_history.append({"question": question, "answer": answer})
-            return {"answer": answer, "sources": sources, "chunks": len(docs)}
         except Exception as e:
-            return {"answer": f"Error generating answer: {e}", "sources": [], "chunks": 0}
+            answer = f"Error generating answer: {str(e)}"
 
-    def summarise(self, docs: List[Document]) -> str:
-        context = "\n\n".join(doc.page_content for doc in docs)
-        try:
-            chain = SUMMARY_PROMPT | self.llm | StrOutputParser()
-            return chain.invoke({"context": context})
-        except Exception as e:
-            return f"Error generating summary: {e}"
+        self.history.append({
+            "question": question,
+            "answer"  : answer,
+            "sources" : sources,
+        })
+
+        return {
+            "answer"     : answer,
+            "sources"    : sources,
+            "chunks_used": len(docs),
+            "question"   : question,
+        }
 
     def clear_history(self):
-        self.chat_history = []
+        self.history = []
 
     def get_stats(self) -> Dict:
-        return {"history_turns": len(self.chat_history)}
+        return {
+            "total_queries"      : self.query_count,
+            "conversation_turns" : len(self.history),
+            "unique_sources"     : list(self.sources_used),
+        }
