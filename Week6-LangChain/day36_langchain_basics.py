@@ -8,7 +8,7 @@
 import os
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.prompts import (
+from langchain_core.prompts import (
     PromptTemplate,
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
@@ -21,7 +21,7 @@ from langchain.memory import (
     ConversationBufferWindowMemory,
     ConversationSummaryMemory,
 )
-from langchain.schema import HumanMessage, SystemMessage
+from langchain_core.messages import HumanMessage, SystemMessage
 
 # Load environment variables
 load_dotenv()
@@ -85,7 +85,7 @@ print("===== PART 2: Setup Gemini with LangChain =====")
 
 # Initialize Gemini
 llm = ChatGoogleGenerativeAI(
-    model       = "gemini-1.5-flash",
+    model       = "gemini-2.0-flash",
     temperature = 0.7,
     google_api_key = GOOGLE_API_KEY,
 )

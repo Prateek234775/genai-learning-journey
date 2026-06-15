@@ -16,7 +16,7 @@ from langchain.agents import (
     create_tool_calling_agent,
 )
 from langchain.tools import tool, Tool
-from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationBufferMemory
 from langchain_core.output_parsers import StrOutputParser
 from langchain_community.tools import DuckDuckGoSearchRun
@@ -27,7 +27,7 @@ load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 llm = ChatGoogleGenerativeAI(
-    model          = "gemini-1.5-flash",
+    model          = "gemini-2.0-flash",
     temperature    = 0.1,   # low temp for reliable tool use
     google_api_key = GOOGLE_API_KEY,
 )

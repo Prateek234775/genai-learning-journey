@@ -17,18 +17,18 @@ from langchain_community.document_loaders import (
     TextLoader,
     DirectoryLoader,
 )
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.prompts import ChatPromptTemplate
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
-from langchain.schema import Document
+from langchain_core.documents import Document
 
 load_dotenv()
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 llm = ChatGoogleGenerativeAI(
-    model          = "gemini-1.5-flash",
+    model          = "gemini-2.0-flash",
     temperature    = 0.3,
     google_api_key = GOOGLE_API_KEY,
 )
