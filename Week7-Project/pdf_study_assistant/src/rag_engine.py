@@ -10,12 +10,12 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from typing import List, Dict
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.documents import Document
 from config import (
-    GOOGLE_API_KEY,
+    GROQ_API_KEY,
     LLM_MODEL,
     LLM_TEMPERATURE,
     MAX_HISTORY_TURNS,
@@ -25,18 +25,22 @@ from config import (
 
 
 class RAGEngine:
+
     def __init__(self):
-        self.llm = ChatGoogleGenerativeAI(
-            model          = LLM_MODEL,
-            temperature    = LLM_TEMPERATURE,
-            google_api_key = GOOGLE_API_KEY,
+        self.llm = ChatGroq(
+            model       = LLM_MODEL,
+            temperature = LLM_TEMPERATURE,
+            api_key     = GROQ_API_KEY,
         )
-        self.history       = []
-        self.query_count   = 0
-        self.sources_used  = set()
+        self.history      = []
+        self.query_count  = 0
+        self.sources_used = set()
 
         self.rag_chain      = self._build_rag_chain()
         self.condense_chain = self._build_condense_chain()
+
+        print(f"RAG Engine initialized with Groq!")
+        print(f"  Model : {LLM_MODEL}")
 
     def _build_rag_chain(self):
         prompt = ChatPromptTemplate.from_template(

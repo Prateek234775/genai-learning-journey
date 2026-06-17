@@ -10,10 +10,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # API Configuration
+GROQ_API_KEY   = os.getenv("GROQ_API_KEY")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 # Model Configuration
-LLM_MODEL        = "gemini-2.0-flash"
+LLM_MODEL        = "llama-3.3-70b-versatile"   # Groq model
 EMBEDDING_MODEL  = "all-MiniLM-L6-v2"
 LLM_TEMPERATURE  = 0.3
 

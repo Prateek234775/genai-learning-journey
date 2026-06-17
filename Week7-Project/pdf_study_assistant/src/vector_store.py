@@ -32,6 +32,69 @@ class VectorStore:
         self.retriever   = None
         self.doc_count   = 0
 
+    # ADD these methods inside the VectorStore class
+# (after get_stats method)
+
+    def delete_source(self, source_name: str) -> bool:
+        """Remove all chunks belonging to a specific source file."""
+        if self.vectorstore is None:
+            return False
+        try:
+            # FAISS does not support direct deletion easily
+            # so we rebuild excluding the target source
+            all_docs = list(
+                self.vectorstore.docstore._dict.values())
+            remaining_docs = [
+                doc for doc in all_docs
+                if doc.metadata.get("file_name") != source_name
+            ]
+
+            if not remaining_docs:
+                self.vectorstore = None
+                self.doc_count   = 0
+                return True
+
+            self.vectorstore = FAISS.from_documents(
+                remaining_docs, self.embeddings)
+            self.retriever   = self.vectorstore.as_retriever(
+                search_kwargs={"k": TOP_K_RETRIEVAL})
+            self.doc_count   = len(remaining_docs)
+            return True
+        except Exception as e:
+            print(f"Error deleting source: {e}")
+            return False
+
+    def get_all_sources(self) -> list:
+        """Get list of unique source filenames in vector store."""
+        if self.vectorstore is None:
+            return []
+        try:
+            all_docs = list(
+                self.vectorstore.docstore._dict.values())
+            sources  = set(
+                doc.metadata.get("file_name", "unknown")
+                for doc in all_docs)
+            return sorted(list(sources))
+        except Exception:
+            return []
+
+    def search_filtered(self, query: str, source: str,
+                        top_k: int = TOP_K_RETRIEVAL):
+        """Search only within a specific source document."""
+        if self.vectorstore is None:
+            return []
+        try:
+            all_results = self.vectorstore.similarity_search(
+                query, k=top_k * 3)
+            filtered = [
+                doc for doc in all_results
+                if doc.metadata.get("file_name") == source
+            ]
+            return filtered[:top_k]
+        except Exception as e:
+            print(f"Filtered search error: {e}")
+            return []
+        
     def build_from_documents(self,
                               documents: List[Document]) -> bool:
         try:
