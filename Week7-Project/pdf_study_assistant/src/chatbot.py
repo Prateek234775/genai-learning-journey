@@ -6,6 +6,14 @@
 
 import os
 import sys
+ # ADD these imports at the top of chatbot.py
+from features import (
+    generate_quiz,
+    generate_flashcards,
+    export_chat_history,
+    calculate_reading_time,
+    get_key_terms,
+)
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -30,18 +38,10 @@ class PDFStudyAssistant:
         print(f"  Chunk size      : 500")
         print(f"  Top K retrieval : {TOP_K_RETRIEVAL}")
 
-    # ADD these imports at the top of chatbot.py
-from features import (
-    generate_quiz,
-    generate_flashcards,
-    export_chat_history,
-    calculate_reading_time,
-    get_key_terms,
-)
+   
 
 # ADD these methods inside the PDFStudyAssistant class
 # (after get_stats method)
-
     def create_quiz(self, n_questions: int = 3,
                     difficulty: str = "medium") -> str:
         if not self.is_ready:
