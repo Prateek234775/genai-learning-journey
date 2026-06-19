@@ -7,15 +7,17 @@
 import sys
 import os
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir  = os.path.dirname(current_dir)
-src_dir     = os.path.join(parent_dir, "src")
+tests_dir  = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(tests_dir)
+src_dir    = os.path.join(parent_dir, "src")
+
 sys.path.insert(0, parent_dir)
 sys.path.insert(0, src_dir)
 
-from langchain_core.documents import Document
-from src.vector_store import VectorStore
+os.chdir(parent_dir)
 
+from langchain_core.documents import Document
+from vector_store import VectorStore
 
 def create_sample_docs():
     return [

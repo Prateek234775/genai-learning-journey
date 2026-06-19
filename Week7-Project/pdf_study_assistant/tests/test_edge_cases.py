@@ -8,13 +8,16 @@ import sys
 import os
 import time
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir  = os.path.dirname(current_dir)
-src_dir     = os.path.join(parent_dir, "src")
+tests_dir  = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(tests_dir)
+src_dir    = os.path.join(parent_dir, "src")
+
 sys.path.insert(0, parent_dir)
 sys.path.insert(0, src_dir)
 
-from src.chatbot import PDFStudyAssistant
+os.chdir(parent_dir)
+
+from chatbot import PDFStudyAssistant
 
 
 def test_chat_before_loading_document():

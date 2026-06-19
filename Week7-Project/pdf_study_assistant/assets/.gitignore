@@ -1,14 +1,3 @@
-data/
-*.pth
-.env
-*.pt
-*.csv
-*.txt
-__pycache__/
-.vscode/
-pdf_vectorstore/
-
-
 # PDF Study Assistant
 *.faiss
 *.pkl
