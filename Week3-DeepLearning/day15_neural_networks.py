@@ -2,7 +2,7 @@
 # DAY 15 - Neural Networks
 # Neurons, Layers, Activation Functions
 # Author: Prateek Kumar Kuntal
-# Date: 19 May 2025
+# Date: 19 May 2026
 # ============================================
 
 import numpy as np
