@@ -2,7 +2,7 @@
 # DAY 16 - Backpropagation & Gradient Descent
 # How Neural Networks Actually Learn
 # Author: Prateek Kumar Kuntal
-# Date: 20 May 2025
+# Date: 20 May 2026
 # ============================================
 
 import numpy as np
