@@ -2,7 +2,7 @@
 # DAY 19 - Image Classifier on CIFAR-10
 # Data Augmentation + Better CNN Architecture
 # Author: Prateek Kumar Kuntal
-# Date: 23 May 2025
+# Date: 23 May 2026
 # ============================================
 
 import torch
