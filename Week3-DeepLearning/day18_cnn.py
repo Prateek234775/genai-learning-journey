@@ -2,7 +2,7 @@
 # DAY 18 - Convolutional Neural Networks
 # How Computers See Images
 # Author: Prateek Kumar Kuntal
-# Date: 22 May 2025
+# Date: 22 May 2026
 # ============================================
 
 import torch
