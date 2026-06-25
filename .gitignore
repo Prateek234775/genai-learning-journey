@@ -38,3 +38,4 @@ __pycache__/
 data/test_*.txt
 data/edge_*.txt
 data/vectorstore/
+.streamlit/secrets.toml
