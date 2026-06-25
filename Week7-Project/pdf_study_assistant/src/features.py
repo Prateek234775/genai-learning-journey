@@ -11,12 +11,13 @@ import time
 import json
 from datetime import datetime
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# Fix path for cloud deployment
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, current_dir)
 
 from typing import List, Dict
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-
 
 def generate_quiz(llm, context: str, n_questions: int = 3,
                   difficulty: str = "medium") -> str:

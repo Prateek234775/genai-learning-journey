@@ -6,22 +6,31 @@
 
 import os
 import sys
- # ADD these imports at the top of chatbot.py
-from features import (
-    generate_quiz,
-    generate_flashcards,
-    export_chat_history,
-    calculate_reading_time,
-    get_key_terms,
-)
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# This fixes imports both locally and on Streamlit Cloud
+current_file = os.path.abspath(__file__)
+current_dir  = os.path.dirname(current_file)
+sys.path.insert(0, current_dir)
 
 from typing import List, Dict
 from document_processor import DocumentProcessor
 from vector_store import VectorStore
 from rag_engine import RAGEngine
 from config import TOP_K_RETRIEVAL, GROQ_API_KEY, LLM_MODEL
+
+# Import features with error handling
+try:
+    from features import (
+        generate_quiz,
+        generate_flashcards,
+        export_chat_history,
+        calculate_reading_time,
+        get_key_terms,
+    )
+    FEATURES_AVAILABLE = True
+except Exception as e:
+    print(f"Features not available: {e}")
+    FEATURES_AVAILABLE = False
 
 
 class PDFStudyAssistant:
