@@ -1,5 +1,6 @@
 # ============================================
 # Config - PDF Study Assistant
+# Works locally AND on Streamlit Cloud
 # Author: Prateek Kumar Kuntal
 # Date: 16 June 2026
 # ============================================
@@ -9,12 +10,25 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# API Configuration
-GROQ_API_KEY   = os.getenv("GROQ_API_KEY")
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+# Read API keys — works both locally and on Streamlit Cloud
+def get_api_key(key_name: str) -> str:
+    # First try Streamlit secrets (cloud deployment)
+    try:
+        import streamlit as st
+        val = st.secrets.get(key_name, "")
+        if val:
+            return val
+    except Exception:
+        pass
+
+    # Fall back to environment variables (local)
+    return os.getenv(key_name, "")
+
+GROQ_API_KEY   = get_api_key("GROQ_API_KEY")
+GOOGLE_API_KEY = get_api_key("GOOGLE_API_KEY")
 
 # Model Configuration
-LLM_MODEL        = "llama-3.3-70b-versatile"   # Groq model
+LLM_MODEL        = "llama3-8b-8192"
 EMBEDDING_MODEL  = "all-MiniLM-L6-v2"
 LLM_TEMPERATURE  = 0.3
 

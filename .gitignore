@@ -21,3 +21,20 @@ __pycache__/
 .DS_Store
 assets/*.gif
 assets/*.mp4
+
+# Secrets
+.streamlit/secrets.toml
+.env
+
+# Data and cache
+data/
+*.faiss
+*.pkl
+__pycache__/
+*.pyc
+.DS_Store
+
+# Test artifacts
+data/test_*.txt
+data/edge_*.txt
+data/vectorstore/
