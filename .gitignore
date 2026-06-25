@@ -1,3 +1,8 @@
+.streamlit/secrets.toml
+**/.streamlit/secrets.toml
+.env
+**/.env
+
 data/
 *.pth
 .env
