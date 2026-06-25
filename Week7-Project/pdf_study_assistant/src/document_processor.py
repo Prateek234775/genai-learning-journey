@@ -11,8 +11,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from pathlib import Path
 from typing import List, Dict
-from langchain_core.documents import Document
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+# Use langchain directly instead of langchain_core
+from langchain.schema import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import (
     PyPDFLoader,
     TextLoader,
