@@ -3,16 +3,13 @@
 # Author: Prateek Kumar Kuntal
 # Date: 16 June 2026
 # ============================================
+
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from typing import List, Dict
-from langchain_groq import ChatGroq
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.documents import Document
 from config import (
     GROQ_API_KEY,
     LLM_MODEL,
@@ -22,9 +19,13 @@ from config import (
     CONDENSE_PROMPT_TEMPLATE,
 )
 
-class RAGEngine:
 
+class RAGEngine:
     def __init__(self):
+        from langchain_groq import ChatGroq
+        from langchain_core.prompts import ChatPromptTemplate
+        from langchain_core.output_parsers import StrOutputParser
+
         self.llm = ChatGroq(
             model       = LLM_MODEL,
             temperature = LLM_TEMPERATURE,
@@ -34,21 +35,17 @@ class RAGEngine:
         self.query_count  = 0
         self.sources_used = set()
 
-        self.rag_chain      = self._build_rag_chain()
-        self.condense_chain = self._build_condense_chain()
+        rag_prompt     = ChatPromptTemplate.from_template(
+            RAG_PROMPT_TEMPLATE)
+        condense_prompt= ChatPromptTemplate.from_template(
+            CONDENSE_PROMPT_TEMPLATE)
+        parser         = StrOutputParser()
+
+        self.rag_chain      = rag_prompt | self.llm | parser
+        self.condense_chain = condense_prompt | self.llm | parser
 
         print(f"RAG Engine initialized with Groq!")
         print(f"  Model : {LLM_MODEL}")
-
-    def _build_rag_chain(self):
-        prompt = ChatPromptTemplate.from_template(
-            RAG_PROMPT_TEMPLATE)
-        return prompt | self.llm | StrOutputParser()
-
-    def _build_condense_chain(self):
-        prompt = ChatPromptTemplate.from_template(
-            CONDENSE_PROMPT_TEMPLATE)
-        return prompt | self.llm | StrOutputParser()
 
     def _format_history(self) -> str:
         if not self.history:
@@ -61,8 +58,7 @@ class RAGEngine:
                 f"Assistant: {turn['answer'][:150]}...")
         return "\n".join(lines)
 
-    def _format_docs(self,
-                     docs: List[Document]) -> str:
+    def _format_docs(self, docs: List) -> str:
         formatted = []
         for i, doc in enumerate(docs, 1):
             source   = doc.metadata.get(
@@ -76,8 +72,7 @@ class RAGEngine:
             )
         return "\n\n---\n\n".join(formatted)
 
-    def _get_sources(self,
-                     docs: List[Document]) -> List[str]:
+    def _get_sources(self, docs: List) -> List[str]:
         sources = set()
         for doc in docs:
             name = doc.metadata.get(
@@ -102,8 +97,7 @@ class RAGEngine:
         except Exception:
             return question
 
-    def answer(self, question: str,
-               docs: List[Document]) -> Dict:
+    def answer(self, question: str, docs: List) -> Dict:
         self.query_count += 1
 
         if not docs:

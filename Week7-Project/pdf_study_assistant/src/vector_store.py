@@ -3,15 +3,13 @@
 # Author: Prateek Kumar Kuntal
 # Date: 16 June 2026
 # ============================================
+
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from typing import List
-from langchain_core.documents import Document
-from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import HuggingFaceEmbeddings
 from config import (
     EMBEDDING_MODEL,
     VECTORSTORE_PATH,
@@ -21,6 +19,7 @@ from config import (
 
 class VectorStore:
     def __init__(self):
+        from langchain_community.embeddings import HuggingFaceEmbeddings
         print(f"Loading embedding model: {EMBEDDING_MODEL}")
         self.embeddings  = HuggingFaceEmbeddings(
             model_name    = EMBEDDING_MODEL,
@@ -31,72 +30,9 @@ class VectorStore:
         self.retriever   = None
         self.doc_count   = 0
 
-    # ADD these methods inside the VectorStore class
-# (after get_stats method)
-
-    def delete_source(self, source_name: str) -> bool:
-        """Remove all chunks belonging to a specific source file."""
-        if self.vectorstore is None:
-            return False
+    def build_from_documents(self, documents: List) -> bool:
         try:
-            # FAISS does not support direct deletion easily
-            # so we rebuild excluding the target source
-            all_docs = list(
-                self.vectorstore.docstore._dict.values())
-            remaining_docs = [
-                doc for doc in all_docs
-                if doc.metadata.get("file_name") != source_name
-            ]
-
-            if not remaining_docs:
-                self.vectorstore = None
-                self.doc_count   = 0
-                return True
-
-            self.vectorstore = FAISS.from_documents(
-                remaining_docs, self.embeddings)
-            self.retriever   = self.vectorstore.as_retriever(
-                search_kwargs={"k": TOP_K_RETRIEVAL})
-            self.doc_count   = len(remaining_docs)
-            return True
-        except Exception as e:
-            print(f"Error deleting source: {e}")
-            return False
-
-    def get_all_sources(self) -> list:
-        """Get list of unique source filenames in vector store."""
-        if self.vectorstore is None:
-            return []
-        try:
-            all_docs = list(
-                self.vectorstore.docstore._dict.values())
-            sources  = set(
-                doc.metadata.get("file_name", "unknown")
-                for doc in all_docs)
-            return sorted(list(sources))
-        except Exception:
-            return []
-
-    def search_filtered(self, query: str, source: str,
-                        top_k: int = TOP_K_RETRIEVAL):
-        """Search only within a specific source document."""
-        if self.vectorstore is None:
-            return []
-        try:
-            all_results = self.vectorstore.similarity_search(
-                query, k=top_k * 3)
-            filtered = [
-                doc for doc in all_results
-                if doc.metadata.get("file_name") == source
-            ]
-            return filtered[:top_k]
-        except Exception as e:
-            print(f"Filtered search error: {e}")
-            return []
-        
-    def build_from_documents(self,
-                              documents: List[Document]) -> bool:
-        try:
+            from langchain_community.vectorstores import FAISS
             print(f"Building vector store from "
                   f"{len(documents)} chunks...")
             self.vectorstore = FAISS.from_documents(
@@ -115,8 +51,7 @@ class VectorStore:
             print(f"Error building vector store: {e}")
             return False
 
-    def add_documents(self,
-                      documents: List[Document]) -> bool:
+    def add_documents(self, documents: List) -> bool:
         try:
             if self.vectorstore is None:
                 return self.build_from_documents(documents)
@@ -132,7 +67,7 @@ class VectorStore:
             return False
 
     def search(self, query: str,
-               top_k: int = TOP_K_RETRIEVAL) -> List[Document]:
+               top_k: int = TOP_K_RETRIEVAL) -> List:
         if self.vectorstore is None:
             return []
         try:
@@ -173,6 +108,7 @@ class VectorStore:
 
     def load(self, path: str = VECTORSTORE_PATH) -> bool:
         try:
+            from langchain_community.vectorstores import FAISS
             self.vectorstore = FAISS.load_local(
                 path, self.embeddings,
                 allow_dangerous_deserialization=True,
@@ -184,6 +120,35 @@ class VectorStore:
         except Exception as e:
             print(f"Error loading: {e}")
             return False
+
+    def get_all_sources(self) -> list:
+        if self.vectorstore is None:
+            return []
+        try:
+            all_docs = list(
+                self.vectorstore.docstore._dict.values())
+            sources  = set(
+                doc.metadata.get("file_name", "unknown")
+                for doc in all_docs)
+            return sorted(list(sources))
+        except Exception:
+            return []
+
+    def search_filtered(self, query: str, source: str,
+                        top_k: int = TOP_K_RETRIEVAL):
+        if self.vectorstore is None:
+            return []
+        try:
+            all_results = self.vectorstore.similarity_search(
+                query, k=top_k * 3)
+            filtered = [
+                doc for doc in all_results
+                if doc.metadata.get("file_name") == source
+            ]
+            return filtered[:top_k]
+        except Exception as e:
+            print(f"Filtered search error: {e}")
+            return []
 
     def is_ready(self) -> bool:
         return self.vectorstore is not None

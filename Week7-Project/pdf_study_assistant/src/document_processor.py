@@ -11,17 +11,12 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from pathlib import Path
 from typing import List, Dict
-from langchain_core.documents import Document
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import (
-    PyPDFLoader,
-    TextLoader,
-)
 from config import CHUNK_SIZE, CHUNK_OVERLAP
 
 
 class DocumentProcessor:
     def __init__(self):
+        from langchain.text_splitter import RecursiveCharacterTextSplitter
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size    = CHUNK_SIZE,
             chunk_overlap = CHUNK_OVERLAP,
@@ -29,8 +24,9 @@ class DocumentProcessor:
         )
         self.loaded_files = []
 
-    def load_pdf(self, file_path: str) -> List[Document]:
+    def load_pdf(self, file_path: str) -> List:
         try:
+            from langchain_community.document_loaders import PyPDFLoader
             loader = PyPDFLoader(file_path)
             docs   = loader.load()
             for doc in docs:
@@ -43,8 +39,9 @@ class DocumentProcessor:
             print(f"Error loading PDF: {e}")
             return []
 
-    def load_text(self, file_path: str) -> List[Document]:
+    def load_text(self, file_path: str) -> List:
         try:
+            from langchain_community.document_loaders import TextLoader
             loader = TextLoader(file_path, encoding="utf-8")
             docs   = loader.load()
             for doc in docs:
@@ -58,7 +55,7 @@ class DocumentProcessor:
             return []
 
     def load_from_bytes(self, file_bytes: bytes,
-                        filename: str) -> List[Document]:
+                        filename: str) -> List:
         temp_path = f"data/temp_{filename}"
         os.makedirs("data", exist_ok=True)
 
@@ -75,13 +72,12 @@ class DocumentProcessor:
 
         return docs
 
-    def split_documents(self,
-                        documents: List[Document]) -> List[Document]:
+    def split_documents(self, documents: List) -> List:
         chunks = self.text_splitter.split_documents(documents)
         print(f"Split into {len(chunks)} chunks")
         return chunks
 
-    def process_file(self, file_path: str) -> List[Document]:
+    def process_file(self, file_path: str) -> List:
         file_path = str(file_path)
 
         if file_path.endswith(".pdf"):
@@ -103,8 +99,7 @@ class DocumentProcessor:
         })
         return chunks
 
-    def process_multiple(self,
-                         file_paths: List[str]) -> List[Document]:
+    def process_multiple(self, file_paths: List[str]) -> List:
         all_chunks = []
         for path in file_paths:
             chunks = self.process_file(path)
