@@ -11,10 +11,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from pathlib import Path
 from typing import List, Dict
-
-# Use langchain directly instead of langchain_core
-from langchain.schema import Document
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import (
     PyPDFLoader,
     TextLoader,
@@ -111,8 +109,6 @@ class DocumentProcessor:
         for path in file_paths:
             chunks = self.process_file(path)
             all_chunks.extend(chunks)
-        print(f"Total chunks: {len(all_chunks)} "
-              f"from {len(file_paths)} files")
         return all_chunks
 
     def get_stats(self) -> Dict:

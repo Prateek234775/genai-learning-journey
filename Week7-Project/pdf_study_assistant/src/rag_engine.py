@@ -3,7 +3,6 @@
 # Author: Prateek Kumar Kuntal
 # Date: 16 June 2026
 # ============================================
-
 import os
 import sys
 
@@ -11,11 +10,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from typing import List, Dict
 from langchain_groq import ChatGroq
-from langchain.prompts import ChatPromptTemplate
-from langchain.schema import Document
-
-# Use langchain directly
-from langchain.schema.output_parser import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.documents import Document
 from config import (
     GROQ_API_KEY,
     LLM_MODEL,
