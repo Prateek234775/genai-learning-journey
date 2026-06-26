@@ -6,11 +6,9 @@
 # ============================================
 
 import os
-from dotenv import load_dotenv
 
-load_dotenv()
 
-# Read API keys — works both locally and on Streamlit Cloud
+
 def get_api_key(key_name: str) -> str:
     # First try Streamlit secrets (cloud deployment)
     try:
@@ -21,9 +19,29 @@ def get_api_key(key_name: str) -> str:
     except Exception:
         pass
 
-    # Fall back to environment variables (local)
-    return os.getenv(key_name, "")
+    # Then try environment variables (local)
+    val = os.environ.get(key_name, "")
+    if val:
+        return val
 
+    # Finally try .env file manually
+    try:
+        env_path = os.path.join(
+            os.path.dirname(os.path.dirname(
+                os.path.abspath(__file__))), ".env")
+        if os.path.exists(env_path):
+            with open(env_path, "r") as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith(key_name + "="):
+                        return line.split("=", 1)[1].strip()
+    except Exception:
+        pass
+
+    return ""
+
+
+# API Keys
 GROQ_API_KEY   = get_api_key("GROQ_API_KEY")
 GOOGLE_API_KEY = get_api_key("GOOGLE_API_KEY")
 
@@ -49,17 +67,6 @@ MAX_FILE_SIZE_MB = 10
 SUPPORTED_TYPES  = ["pdf", "txt"]
 
 # Prompt Templates
-SYSTEM_PROMPT = """You are a helpful study assistant that answers
-questions based on uploaded documents.
-
-Rules:
-- Answer ONLY from the provided document context
-- If answer is not in documents say so clearly
-- Always be concise and accurate
-- Cite which part of the document you used
-- Use bullet points for lists
-- Use simple language suitable for students"""
-
 RAG_PROMPT_TEMPLATE = """
 You are a helpful study assistant.
 Use ONLY the following context from the uploaded documents to answer.
