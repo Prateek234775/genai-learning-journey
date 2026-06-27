@@ -215,7 +215,8 @@ Test coverage includes:
 ---
 
 ## 🚀 Deployment
-
+## 🚀 Live Demo
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://pdf-study-assistant-prateek.streamlit.app/)
 ### Streamlit Cloud (Free)
 1. Push code to GitHub
 2. Go to [share.streamlit.io](https://share.streamlit.io)
