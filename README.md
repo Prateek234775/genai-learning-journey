@@ -18,8 +18,8 @@
 | Week 4 (Days 22-28) | NLP and Transformers | ✅ Done |
 | Week 5 (Days 29-35) | HuggingFace and LLMs | ✅ Done |
 | Week 6 (Days 36-42) | LangChain and RAG | ✅ Done |
-| Week 7 (Days 43-49) | Full GenAI Project | 🔄 In Progress |
-| Week 8 (Days 50-56) | Deploy and Polish | 🔜 Coming |
+| Week 7 (Days 43-49) | Full GenAI Project | ✅ Done |
+| Week 8 (Days 50-56) | Deploy and Polish | ✅ Done |
 
 ---
 
