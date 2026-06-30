@@ -2,7 +2,7 @@
 # DAY 24 - RNNs and LSTMs
 # How Sequence Models Work
 # Author: Prateek Kumar Kuntal
-# Date: 28 May 2025
+# Date: 28 May 2026
 # ============================================
 
 import torch
