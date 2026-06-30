@@ -3,7 +3,7 @@
 > From Python basics to building and deploying production GenAI applications.
 > Documented daily for 56 days.
 
-[![Days Complete](https://img.shields.io/badge/Days%20Complete-47%2F56-blue.svg)]()
+[![Days Complete](https://img.shields.io/badge/Days%20Complete-56%2F56-blue.svg)]()
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue.svg)](https://linkedin.com/in/yourprofile)
 
 ---
