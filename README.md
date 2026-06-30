@@ -68,6 +68,18 @@ genai-learning-journey/
 
 ---
 
+## 🏆 Certifications
+
+| Certificate | Provider | Date |
+|---|---|---|
+| LangChain for LLM Application Development | DeepLearning.AI | June 2025 |
+| LangChain Chat with Your Data | DeepLearning.AI | June 2025 |
+| Building and Evaluating Advanced RAG | DeepLearning.AI | June 2025 |
+| Intro to Machine Learning | Kaggle | June 2025 |
+| Intro to Deep Learning | Kaggle | June 2025 |
+| Natural Language Processing | Kaggle | June 2025 |
+---
+
 ## 👤 About Me
 
 **Prateek Kumar Kuntal**
